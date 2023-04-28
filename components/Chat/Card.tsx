@@ -18,6 +18,10 @@ interface Props {
 
 const Cardss: React.FC<Props> = (props: Props) => {
   const [callState, setCallState] = useState<'Ready' | 'Outgoing' | 'Ongoing' | 'Cancelled'>('Ready');
+  const [timer, setTimer] = useState<NodeJS.Timeout>();
+  const [isDragging, setIsDragging] = useState(false);
+  const [cardPosition, setCardPosition] = useState({ x: 0, y: 0 });
+
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
 
   const { isvissible } = props;
@@ -30,24 +34,25 @@ const Cardss: React.FC<Props> = (props: Props) => {
       const cardRect = card?.getBoundingClientRect();
       const mouseX = event.clientX;
       const mouseY = event.clientY;
-
+  
+      setIsDragging(true);
+  
       const handleMouseMove = (event: MouseEvent) => {
         const deltaX = event.clientX - mouseX;
         const deltaY = event.clientY - mouseY;
-        setCardStyle({ transform: `translate(${deltaX}px, ${deltaY}px)` });
+        setCardPosition({ x: deltaX, y: deltaY });
       };
-
+  
       const handleMouseUp = () => {
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
-        setCardStyle({});
+        setIsDragging(false);
       };
-
+  
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     }
   };
-
   const handlePhoneCallButtonClick = () => {
     setCallState('Outgoing');
     setTimeout(() => {
@@ -62,11 +67,35 @@ const Cardss: React.FC<Props> = (props: Props) => {
       setCallState('Ready');
     }, 5000);
   };
+
+ useEffect(() => {
+    if (callState === 'Ongoing') {
+      const interval = setInterval(() => {
+        setTimeElapsed((prevTime) => prevTime + 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [callState]);
+
+
 console.log(props.isvissible)
   return (
     <>
     
-      <Card  style={{ display :`${isvissible == true ? "block" : "none"}  `  }} sx={{ maxWidth: 325, height: 240  }} onMouseDown={handleMouseDown}>
+      <Card 
+        style={{
+          display: `${isvissible ? 'block' : 'none'}`,
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: `translate(${cardPosition.x}px, ${cardPosition.y}px) ${
+            isDragging ? 'scale(1.05)' : ''
+          } translate(-50%, 100%)`,
+          zIndex: 1,
+        }}
+        onMouseDown={handleMouseDown}
+        sx={{ maxWidth: 325, height: 240 }}
+      >
         <CardMedia
           sx={{ height: 50 }}
          
