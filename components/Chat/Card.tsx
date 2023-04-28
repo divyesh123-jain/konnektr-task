@@ -10,6 +10,7 @@ import { FcVideoCall } from 'react-icons/fc';
 import { FcEndCall } from 'react-icons/fc';
 import { FiPhoneCall } from 'react-icons/fi';
 import { Block } from '@react-three/fiber/dist/declarations/src/core/utils';
+import { CSSProperties } from 'react';
 
 interface Props {
   isvissible: boolean;
@@ -19,18 +20,10 @@ const Cardss: React.FC<Props> = (props: Props) => {
   const [callState, setCallState] = useState<'Ready' | 'Outgoing' | 'Ongoing' | 'Cancelled'>('Ready');
   const [timeElapsed, setTimeElapsed] = useState<number>(0);
 
-const {isvissible} = props
+  const { isvissible } = props;
 
-  useEffect(() => {
-    let intervalId: any;
-    if (callState === 'Ongoing') {
-      intervalId = setInterval(() => {
-        setTimeElapsed((prevTime) => prevTime + 1);
-      }, 1000);
-    }
-    return () => clearInterval(intervalId);
-  }, [callState]);
- 
+  const [cardStyle, setCardStyle] = useState<CSSProperties>({});
+
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     if (typeof window !== 'undefined') {
       const card = event.currentTarget.closest('.MuiCard-root');
@@ -41,13 +34,13 @@ const {isvissible} = props
       const handleMouseMove = (event: MouseEvent) => {
         const deltaX = event.clientX - mouseX;
         const deltaY = event.clientY - mouseY;
-        card!.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        setCardStyle({ transform: `translate(${deltaX}px, ${deltaY}px)` });
       };
 
       const handleMouseUp = () => {
         window.removeEventListener('mousemove', handleMouseMove);
         window.removeEventListener('mouseup', handleMouseUp);
-        card!.style.transform = 'none';
+        setCardStyle({});
       };
 
       window.addEventListener('mousemove', handleMouseMove);
