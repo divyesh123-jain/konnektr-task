@@ -9,7 +9,7 @@ import CardActions from '@mui/material/CardActions';
 import { FcVideoCall } from 'react-icons/fc';
 import { FcEndCall } from 'react-icons/fc';
 import { FiPhoneCall } from 'react-icons/fi';
-import { Block } from '@react-three/fiber/dist/declarations/src/core/utils';
+
 import { CSSProperties } from 'react';
 
 interface Props {
